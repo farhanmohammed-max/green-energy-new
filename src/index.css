@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+
+  --color-forest-950: #08231A;
+  --color-forest-900: #0F3D2E;
+  --color-forest-800: #16523E;
+  --color-forest-700: #1E6B51;
+  --color-leaf-600: #2D8A56;
+  --color-leaf-500: #3CA66B;
+  --color-leaf-100: #E6F4EC;
+  --color-leaf-50: #F2FAF5;
+  --color-solar-500: #E8B931;
+  --color-solar-400: #F2CC59;
+  --color-solar-100: #FDF6DF;
+  --color-surface: #F6F8F5;
+  --color-ink: #10241C;
+  --color-muted: #52675E;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background-color: var(--color-surface);
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--color-leaf-600);
+    outline-offset: 2px;
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.35s ease-out both;
+}
