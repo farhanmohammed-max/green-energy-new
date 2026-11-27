@@ -15,6 +15,7 @@ import {
   getJakartaYearMonth,
   getSafeRedirectPath,
   getTodayJakartaISO,
+  isValidUUID,
   sanitizeSearchTerm,
   slugify,
 } from '@/lib/utils';
@@ -67,6 +68,13 @@ describe('Booking Code & Utility Functions', () => {
       'https://wa.me/6281122334455?text=Halo',
     );
     expect(formatWhatsAppLink('123')).toBeNull();
+  });
+
+  it('validates UUID format strictly', () => {
+    expect(isValidUUID('11111111-1111-4111-8111-111111111111')).toBe(true);
+    expect(isValidUUID('panel-surya')).toBe(false);
+    expect(isValidUUID('')).toBe(false);
+    expect(isValidUUID(null)).toBe(false);
   });
 });
 

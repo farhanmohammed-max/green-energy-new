@@ -47,8 +47,12 @@ import type { BookingStatus, BookingWithService, PreferredTime } from '@/types/d
 const PAGE_SIZE = 10;
 
 export function AdminBookingsPage() {
-  const [searchParams] = useSearchParams();
-  const initialStatus = (searchParams.get('status') as BookingStatus | 'all') || 'all';
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rawStatus = searchParams.get('status');
+  const initialStatus: BookingStatus | 'all' =
+    rawStatus && (BOOKING_STATUS_LIST as readonly string[]).includes(rawStatus)
+      ? (rawStatus as BookingStatus)
+      : 'all';
 
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<BookingStatus | 'all'>(initialStatus);
@@ -230,6 +234,7 @@ export function AdminBookingsPage() {
                 setDateFrom('');
                 setDateTo('');
                 setPage(1);
+                setSearchParams({}, { replace: true });
               }}
             >
               Reset Filter

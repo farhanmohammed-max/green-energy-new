@@ -37,6 +37,7 @@ export function BookingPage() {
     register,
     handleSubmit,
     setValue,
+    getValues,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<BookingFormValues>({
@@ -56,27 +57,32 @@ export function BookingPage() {
 
   const selectedServiceId = watch('service_id');
 
-  // Pre-select layanan dari URL slug/query bila tersedia
+  // Pre-select layanan dari URL slug/query bila tersedia dan belum dipilih pengguna
   useEffect(() => {
-    if (!servicesQuery.data?.length) return;
-    if (targetSlug) {
-      const matched = servicesQuery.data.find((s) => s.slug === targetSlug);
-      if (matched) {
-        setValue('service_id', matched.id, { shouldValidate: true });
-      }
+    if (!servicesQuery.data?.length || !targetSlug) return;
+    if (getValues('service_id')) return;
+    const matched = servicesQuery.data.find((s) => s.slug === targetSlug);
+    if (matched) {
+      setValue('service_id', matched.id, { shouldValidate: true });
     }
-  }, [servicesQuery.data, targetSlug, setValue]);
+  }, [servicesQuery.data, targetSlug, setValue, getValues]);
 
-  // Pre-fill data profil untuk pelanggan login
+  // Pre-fill data profil untuk pelanggan login tanpa menimpa input yang sudah diketik
   useEffect(() => {
     if (profile) {
-      if (profile.full_name) setValue('customer_name', profile.full_name);
-      if (profile.email) setValue('customer_email', profile.email);
-      if (profile.phone) setValue('customer_phone', profile.phone);
-    } else if (user?.email) {
+      if (profile.full_name && !getValues('customer_name')) {
+        setValue('customer_name', profile.full_name);
+      }
+      if (profile.email && !getValues('customer_email')) {
+        setValue('customer_email', profile.email);
+      }
+      if (profile.phone && !getValues('customer_phone')) {
+        setValue('customer_phone', profile.phone);
+      }
+    } else if (user?.email && !getValues('customer_email')) {
       setValue('customer_email', user.email);
     }
-  }, [profile, user, setValue]);
+  }, [profile, user, setValue, getValues]);
 
   const onSubmit = async (values: BookingFormValues) => {
     try {

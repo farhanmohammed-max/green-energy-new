@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { PageMeta } from '@/components/shared/PageMeta';
@@ -10,30 +10,30 @@ import { Button } from '@/components/ui/Button';
 import { useActiveCategories } from '@/features/categories/api';
 import { useActiveServices } from '@/features/services/api';
 import { useDebounce } from '@/hooks/useDebounce';
-import { cn, getFriendlyErrorMessage } from '@/lib/utils';
+import { cn, getFriendlyErrorMessage, isValidUUID } from '@/lib/utils';
 
 export function ServicesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialCategory = searchParams.get('kategori') || 'all';
-  const [categoryId, setCategoryId] = useState<string>(initialCategory);
+  const rawCategoryParam = searchParams.get('kategori') || 'all';
   const [searchInput, setSearchInput] = useState<string>(searchParams.get('q') || '');
   const debouncedSearch = useDebounce(searchInput, 250);
 
-  useEffect(() => {
-    const paramCat = searchParams.get('kategori') || 'all';
-    if (paramCat !== categoryId) {
-      setCategoryId(paramCat);
-    }
-  }, [searchParams, categoryId]);
-
   const categoriesQuery = useActiveCategories();
+
+  // Dukung parameter ?kategori= baik berupa UUID maupun slug kategori tanpa memicu error UUID Postgres
+  const categoryId = useMemo(() => {
+    if (rawCategoryParam === 'all') return 'all';
+    if (isValidUUID(rawCategoryParam)) return rawCategoryParam;
+    const matchedBySlug = categoriesQuery.data?.find((c) => c.slug === rawCategoryParam);
+    return matchedBySlug?.id ?? 'all';
+  }, [rawCategoryParam, categoriesQuery.data]);
+
   const servicesQuery = useActiveServices({
     categoryId,
     search: debouncedSearch,
   });
 
   const handleSelectCategory = (nextCat: string) => {
-    setCategoryId(nextCat);
     const nextParams = new URLSearchParams(searchParams);
     if (nextCat === 'all') {
       nextParams.delete('kategori');

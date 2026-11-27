@@ -138,6 +138,11 @@ export function formatWhatsAppLink(phone: string | null | undefined, text?: stri
   return text ? `${base}?text=${encodeURIComponent(text)}` : base;
 }
 
+export function isValidUUID(value: string | null | undefined): boolean {
+  if (!value) return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.trim());
+}
+
 /**
  * Menghasilkan kode pemesanan unik kriptografis: GE- + 16 karakter heksadesimal uppercase.
  */

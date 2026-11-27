@@ -3,6 +3,7 @@ import { assertSupabaseConfigured, supabase } from '@/lib/supabase';
 import {
   generateBookingCode,
   getJakartaYearMonth,
+  isValidUUID,
   sanitizeSearchTerm,
 } from '@/lib/utils';
 import type {
@@ -161,6 +162,9 @@ export async function fetchAdminBookings(
 
 export async function fetchAdminBookingById(id: string): Promise<BookingWithService | null> {
   assertSupabaseConfigured();
+  if (!isValidUUID(id)) {
+    return null;
+  }
   const { data, error } = await supabase
     .from('bookings')
     .select('*, services(id, name, slug)')
